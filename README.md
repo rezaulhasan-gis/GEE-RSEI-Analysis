@@ -20,40 +20,80 @@ This project calculates the **Remote Sensing Ecological Index (RSEI)** using **L
 
 # Calculation of Ecological Indices
 
-## RSEI Computation
-RSEI is computed using four key ecological indicators:
+### 1. Normalized Difference Vegetation Index (NDVI)
+NDVI is calculated using the formula:
 
-1. **Normalized Difference Vegetation Index (NDVI)** - Measures vegetation health:
-   \[
-   NDVI = \frac{NIR - Red}{NIR + Red}
-   \]
+NDVI = (NIR - RED) / (NIR + RED)
 
-2. **Land Surface Temperature (LST)** - Derived using:
-   \[
-   LST = \frac{TB}{1 + (0.00115 \times \frac{TB}{1.438}) \times \ln(\epsilon)} - 273.15
-   \]
+- **NIR (Near-Infrared)** = `SR_B5`
+- **RED** = `SR_B4`
 
-3. **Wetness Index (WET)** - Extracted using Tasseled Cap Transformation:
-   \[
-   Wet = 0.3283 \times Red + 0.3407 \times NIR + 0.1511 \times Blue + 0.1973 \times Green - 0.7171 \times SWIR1 - 0.4559 \times SWIR2
-   \]
+NDVI values range from **-1 to 1**:
+- Negative values indicate **water or bare soil**.
+- Values near zero suggest **barren areas**.
+- Higher values indicate **vegetation**.
 
-4. **Normalized Difference Built-up Soil Index (NDBSI)** - Measures urban expansion:
-   \[
-   NDBSI = \frac{(RED + SWIR1) - (NIR + BLUE)}{(RED + SWIR1) + (NIR + BLUE)}
-   \]
+---
 
-## Data Standardization
-- Each index is **normalized to a range of [0,1]**.
-- Standardized using **mean and standard deviation** calculations.
+### 2. Land Surface Temperature (LST)
+LST is derived from **thermal band ST_B10** and emissivity (**EM**) using the Planck function:
 
-## Principal Component Analysis (PCA)
-- **PCA is applied** to extract dominant environmental trends.
-- **First principal component (PC1) accounts for ~80%** of dataset variation.
-- **RSEI is obtained by normalizing PC1**:
-   \[
-   RSEI = \frac{PC1 - PC1_{min}}{PC1_{max} - PC1_{min}}
-   \]
+LST = (TB / (1 + (0.00115 * (TB / 1.438)) * log(em))) - 273.15
+
+where:
+- **TB** = Top of Atmosphere Brightness Temperature from **ST_B10** (Kelvin).
+- **Emissivity (EM)** is estimated from the **Fractional Vegetation Cover (FV)**:
+  
+  EM = (FV * 0.004) + 0.986
+  
+  with **FV** calculated as:
+  
+  FV = ((NDVI - NDVI_min) / (NDVI_max - NDVI_min))^2
+
+LST is expressed in **Celsius** by subtracting **273.15**.
+
+---
+
+### 3. Normalized Difference Built-up Index (NDBSI)
+NDBSI is calculated as:
+
+NDBSI = ((RED + SWIR1) - (NIR + BLUE)) / ((RED + SWIR1) + (NIR + BLUE))
+
+- **RED** = `SR_B4`
+- **SWIR1 (Shortwave Infrared 1)** = `SR_B6`
+- **NIR** = `SR_B5`
+- **BLUE** = `SR_B2`
+
+**Higher NDBSI values** indicate **urban and built-up areas**.
+**Lower values** indicate **vegetated or water areas**.
+
+---
+
+### 4. Wetness Index (Tasseled Cap Transformation - Wetness Component)
+Wetness is calculated using:
+
+Wetness = 0.1511 * B2 + 0.1973 * B3 + 0.3283 * B4 + 0.3407 * B5 - 0.7117 * B6 - 0.4559 * B7
+
+- **B2 (Blue)** = `SR_B2`
+- **B3 (Green)** = `SR_B3`
+- **B4 (Red)** = `SR_B4`
+- **B5 (NIR)** = `SR_B5`
+- **B6 (SWIR1)** = `SR_B6`
+- **B7 (SWIR2)** = `SR_B7`
+
+**Higher values** indicate **moisture-rich surfaces** (e.g., water bodies).
+**Lower values** indicate **drier surfaces**.
+
+---
+
+### Summary of Index Calculations
+| Index  | Formula  | Interpretation  |
+|---------|------------------------------------|--------------------------------|
+| **NDVI**  | (NIR - RED) / (NIR + RED) | Measures vegetation health (higher = greener) |
+| **LST**  | Derived from ST_B10 using Planck’s function | Surface temperature in °C |
+| **NDBSI**  | ((RED + SWIR1) - (NIR + BLUE)) / ((RED + SWIR1) + (NIR + BLUE)) | Measures built-up area intensity |
+| **Wetness**  | Tasseled Cap Wetness Component | Indicates surface moisture content |
+
 
 ## Classification of RSEI
 RSEI values are categorized into five ecological stress levels:
