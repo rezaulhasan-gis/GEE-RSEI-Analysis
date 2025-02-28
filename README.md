@@ -18,35 +18,55 @@ This project calculates the **Remote Sensing Ecological Index (RSEI)** using **L
 - Best growth season imagery (August – November)
 - Masking cloud shadows and water bodies using **QA_PIXEL** and **NDWI**
 
-### Calculation of Ecological Indices
+# Calculation of Ecological Indices
+
+## RSEI Computation
 RSEI is computed using four key ecological indicators:
+
 1. **Normalized Difference Vegetation Index (NDVI)** - Measures vegetation health:
-   \[ NDVI = \frac{NIR - Red}{NIR + Red} \]
+   \[
+   NDVI = \frac{NIR - Red}{NIR + Red}
+   \]
+
 2. **Land Surface Temperature (LST)** - Derived using:
-   \[ LST = \frac{TB}{1 + (0.00115 \times \frac{TB}{1.438}) \times \ln(\epsilon)} - 273.15 \]
+   \[
+   LST = \frac{TB}{1 + (0.00115 \times \frac{TB}{1.438}) \times \ln(\epsilon)} - 273.15
+   \]
+
 3. **Wetness Index (WET)** - Extracted using Tasseled Cap Transformation:
-   \[ Wet = 0.3283 \times Red + 0.3407 \times NIR + 0.1511 \times Blue + 0.1973 \times Green - 0.7171 \times SWIR1 - 0.4559 \times SWIR2 \]
+   \[
+   Wet = 0.3283 \times Red + 0.3407 \times NIR + 0.1511 \times Blue + 0.1973 \times Green - 0.7171 \times SWIR1 - 0.4559 \times SWIR2
+   \]
+
 4. **Normalized Difference Built-up Soil Index (NDBSI)** - Measures urban expansion:
-   \[ NDBSI = \frac{(RED + SWIR1) - (NIR + BLUE)}{(RED + SWIR1) + (NIR + BLUE)} \]
+   \[
+   NDBSI = \frac{(RED + SWIR1) - (NIR + BLUE)}{(RED + SWIR1) + (NIR + BLUE)}
+   \]
 
-### Data Standardization
-- Each index is **normalized to a range of [0,1]**
-- Standardized using **mean and standard deviation** calculations
+## Data Standardization
+- Each index is **normalized to a range of [0,1]**.
+- Standardized using **mean and standard deviation** calculations.
 
-### Principal Component Analysis (PCA)
-- **PCA is applied** to extract dominant environmental trends
-- **First principal component (PC1) accounts for ~80%** of dataset variation
+## Principal Component Analysis (PCA)
+- **PCA is applied** to extract dominant environmental trends.
+- **First principal component (PC1) accounts for ~80%** of dataset variation.
 - **RSEI is obtained by normalizing PC1**:
-   \[ RSEI = \frac{PC1 - PC1_{min}}{PC1_{max} - PC1_{min}} \]
+   \[
+   RSEI = \frac{PC1 - PC1_{min}}{PC1_{max} - PC1_{min}}
+   \]
 
-### Classification of RSEI
-- RSEI values are categorized into five ecological stress levels:
-  1. **Very Low (0.0 - 0.2)**
-  2. **Low (0.2 - 0.4)**
-  3. **Moderate (0.4 - 0.6)**
-  4. **High (0.6 - 0.8)**
-  5. **Very High (0.8 - 1.0)**
-- The classification helps in assessing **urbanization effects, land degradation, and reforestation success**
+## Classification of RSEI
+RSEI values are categorized into five ecological stress levels:
+
+| RSEI Range  | Stress Level |
+|-------------|-------------|
+| 0.0 - 0.2   | Very Low    |
+| 0.2 - 0.4   | Low         |
+| 0.4 - 0.6   | Moderate    |
+| 0.6 - 0.8   | High        |
+| 0.8 - 1.0   | Very High   |
+
+This classification helps assess **urbanization effects, land degradation, and reforestation success**.
 
 ## Features
 - **Google Earth Engine (GEE) for cloud-based analysis**
@@ -58,9 +78,9 @@ RSEI is computed using four key ecological indicators:
 - **Visualization and histogram plotting in GEE**
 
 ## Results
-- **RSEI Map**: Visual representation of environmental quality
-- **Classified RSEI**: Five stress levels for easy interpretation
-- **Histogram Analysis**: Distribution of RSEI values across the AOI
+- **RSEI Map**: Visual representation of environmental quality.
+- **Classified RSEI**: Five stress levels for easy interpretation.
+- **Histogram Analysis**: Distribution of RSEI values across the AOI.
 
 ## Prerequisites
 - **Google Earth Engine (GEE) account**
@@ -68,14 +88,22 @@ RSEI is computed using four key ecological indicators:
 - Familiarity with **remote sensing indices and PCA**
 
 ## How to Use
+
 ### 📜 Code Repository
 You can find the complete script for this project in the GitHub repository:
-[GitHub Repository Link]([your-repository-link-here](https://github.com/rezaulhasan-gis/GEE-RSEI-Analysis/blob/main/GEE_code.js))
 
-1. **Open Google Earth Engine** and create a new script
-2. **Copy and paste the code** into the GEE script editor
-3. **Modify AOI and date range** as needed
-4. **Run the script** to generate the RSEI map and classification
+➡️ **[GitHub Repository Link](https://github.com/rezaulhasan-gis/GEE-RSEI-Analysis/blob/main/GEE_code.js)**
+
+### Steps to Run
+1. **Open Google Earth Engine** and create a new script.
+2. **Copy and paste the code** into the GEE script editor.
+3. **Modify AOI and date range** as needed.
+4. **Run the script** to generate the RSEI map and classification.
+
+---
+
+This version improves readability, correctly formats the equations in LaTeX, and ensures proper Markdown syntax for GitHub. Let me know if you need further refinements! 🚀
+
 
 ## Output
 ![Sample output](RSEI_result.png)
